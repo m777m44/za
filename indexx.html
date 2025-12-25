@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليلك الشامل - النسخة المطورة</title>
+    
+    <!-- استيراد خط Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- أيقونات للتحكم بالواجهة -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           1. متغيرات الألوان والثيمات (Color Variables)
+           ========================================= */
+        :root {
+            /* الألوان الأساسية للفئات (ثابتة نسبياً مع تعديلات بسيطة) */
+            --def-color: #3b82f6;       /* أزرق */
+            --reason-color: #10b981;    /* أخضر */
+            --comp-color: #ef4444;      /* أحمر */
+            --qa-color: #8b5cf6;        /* بنفسجي */
+            --blank-color: #f59e0b;     /* برتقالي */
+
+            /* متغيرات الثيم (الوضع الافتراضي الفاتح) */
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            /* لون الهيدر الأساسي */
+            --brand-color: #2c3e50; 
+            --header-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* الوضع المظلم (Dark Mode) */
+        [data-theme="dark"] {
+            --bg-body: #0f172a;        /* كحلي داكن جداً */
+            --bg-card: #1e293b;        /* رمادي أزرق */
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            --header-gradient: linear-gradient(135deg, #4c1d95 0%, #1e1b4b 100%);
+        }
+
+        /* الوضع الليلي العميق (Midnight Mode) */
+        [data-theme="midnight"] {
+            --bg-body: #000000;
+            --bg-card: #111111;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --border-color: #333333;
+            --shadow-card: 0 4px 6px -1px rgba(255, 255, 255, 0.05);
+            --shadow-hover: 0 0 15px rgba(255, 255, 255, 0.1);
+            --header-gradient: linear-gradient(135deg, #000000 0%, #434343 100%);
+        }
+
+        /* ضبط الألوان الدقيقة في المظلم لتكون نيونية */
+        [data-theme="dark"] { --def-color: #60a5fa; --reason-color: #34d399; --comp-color: #f87171; --qa-color: #a78bfa; --blank-color: #fbbf24; }
+        [data-theme="midnight"] { --def-color: #3b82f6; --reason-color: #10b981; --comp-color: #ef4444; --qa-color: #8b5cf6; --blank-color: #f59e0b; }
+
+        /* تنسيقات عامة */
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.8;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+
+        /* =========================================
+           2. واجهة التحكم (Theme Switcher)
+           ========================================= */
+        .theme-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+            align-items: center;
+        }
+
+        .theme-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            background: transparent;
+        }
+        .theme-btn:hover { transform: scale(1.1); color: var(--text-main); }
+        .theme-btn.active { color: var(--def-color); background: rgba(59, 130, 246, 0.1); }
+        .theme-btn i { font-size: 14px; }
+
+        /* =========================================
+           3. الهيدر (Header)
+           ========================================= */
+        header {
+            background: var(--header-gradient);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .header-content { position: relative; z-index: 2; }
+        header h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -1px; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        header p { font-size: 1.2rem; opacity: 0.9; font-weight: 300; }
+
+        /* =========================================
+           4. البطاقات والتخطيط (Cards & Layout)
+           ========================================= */
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+        .section-wrapper { margin-bottom: 80px; }
+        
+        .section-title {
+            display: inline-block;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 4px solid;
+            color: var(--text-main);
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--brand-color);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* زخرفة جانبية للبطاقات */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            background: currentColor; /* يرث لون العنصر الأب */
+        }
+
+        /* --- قسم التعاريف (أزرق) --- */
+        .section-def .section-title { border-color: var(--def-color); }
+        .section-def .section-title::after { background: var(--def-color); }
+        .card-def { color: var(--def-color); }
+        .card-def .term { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; display: block; color: var(--def-color); }
+        .card-def .desc { color: var(--text-muted); }
+
+        /* --- قسم التعاليل (أخضر) --- */
+        .section-reason .section-title { border-color: var(--reason-color); }
+        .section-reason .section-title::after { background: var(--reason-color); }
+        .card-reason { color: var(--reason-color); }
+        .card-reason .q { font-weight: 700; margin-bottom: 5px; color: var(--text-main); }
+        .card-reason .a { 
+            background: rgba(16, 185, 129, 0.1); 
+            color: var(--reason-color); 
+            padding: 10px 15px; 
+            border-radius: 8px; 
+            display: inline-block;
+            font-weight: 600;
+        }
+        [data-theme="dark"] .card-reason .a { background: rgba(52, 211, 153, 0.15); }
+
+        /* --- قسم المقارنات (أحمر) --- */
+        .section-comp .section-title { border-color: var(--comp-color); }
+        .section-comp .section-title::after { background: var(--comp-color); }
+        .card-comp { color: var(--comp-color); padding: 0; }
+        .comp-header { 
+            background: rgba(239, 68, 68, 0.1); 
+            padding: 15px 25px; 
+            font-weight: bold; 
+            color: var(--comp-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .comp-table { width: 100%; border-collapse: collapse; }
+        .comp-table th, .comp-table td { padding: 15px 25px; text-align: right; border-bottom: 1px solid var(--border-color); }
+        .comp-table th { color: var(--text-muted); font-weight: 500; width: 30%; }
+        
+        /* --- قسم الأسئلة (بنفسجي) --- */
+        .section-qa .section-title { border-color: var(--qa-color); }
+        .section-qa .section-title::after { background: var(--qa-color); }
+        .card-qa { color: var(--qa-color); }
+        .card-qa .q { color: var(--qa-color); font-weight: 700; font-size: 1.1rem; margin-bottom: 10px; }
+        .card-qa .a { color: var(--text-main); padding-right: 15px; border-right: 3px solid var(--border-color); }
+
+        /* --- قسم الفراغات (برتقالي) --- */
+        .section-blank .section-title { border-color: var(--blank-color); }
+        .section-blank .section-title::after { background: var(--blank-color); }
+        .card-blank { color: var(--blank-color); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+        .blank-text { flex: 1; font-size: 1.1rem; color: var(--text-main); }
+        .blank-input { 
+            min-width: 100px; 
+            height: 35px; 
+            border-bottom: 2px solid var(--blank-color); 
+            text-align: center; 
+            color: var(--blank-color); 
+            font-weight: bold;
+        }
+        .blank-solution {
+            font-size: 0.8rem;
+            background: var(--bg-body);
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: var(--text-muted);
+        }
+
+        /* فوتر */
+        footer { text-align: center; margin-top: 100px; padding: 30px; color: var(--text-muted); border-top: 1px solid var(--border-color); font-size: 0.9rem; }
+
+        /* للتجاوب */
+        @media (max-width: 600px) {
+            header h1 { font-size: 2rem; }
+            .theme-controls { bottom: 10px; left: 10px; padding: 10px; }
+            .card-blank { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <!-- أدوات التحكم بالثيم -->
+    <div class="theme-controls">
+        <button class="theme-btn active" onclick="setTheme('light')" title="الوضع الفاتح"><i class="fas fa-sun"></i></button>
+        <button class="theme-btn" onclick="setTheme('dark')" title="الوضع المظلم"><i class="fas fa-moon"></i></button>
+        <button class="theme-btn" onclick="setTheme('midnight')" title="الوضع الليلي العميق"><i class="fas fa-adjust"></i></button>
+        <div style="width: 1px; height: 20px; background: var(--border-color);"></div>
+        <!-- تغيير ألوان الهايدر -->
+        <button class="theme-btn" onclick="setBrand('blue')" style="color: #3b82f6;"><i class="fas fa-palette"></i></button>
+    </div>
+
+    <header>
+        <div class="header-content">
+            <h1>ملخص علم الأنسجة</h1>
+            <p>تصميم متطور للمراجعة والدراسة</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ==========================
+             1. التعاريف
+             ========================== -->
+        <div class="section-wrapper section-def">
+            <h2 class="section-title">التعاريف والمصطلحات</h2>
+
+            <div class="card card-def">
+                <span class="term">النسيج (Tissue)</span>
+                <div class="desc">هو مجموعة من الخلايا المتماثلة وتتضمن نواتج خلوية معينة ومتخصصة لأداء وظيفة معينة.</div>
+            </div>
+
+            <div class="card card-def">
+                <span class="term">علم الأنسجة (Histology)</span>
+                <div class="desc">هو العلم الذي يبحث بدراسة الأنسجة المختلفة.</div>
+            </div>
+
+            <div class="card card-def">
+                <span class="term">الأنسجة النباتية</span>
+                <div class="desc">مجموعة من الخلايا تظهر تباينا في الشكل والحجم ومقترنة مع بعضها لإنجاز وظيفة معينة.</div>
+            </div>
+
+            <div class="card card-def">
+                <span class="term">النسيج المرستيمي (الأنشائي)</span>
+                <div class="desc">هو النسيج الذي يتميز بقدرة خلاياه على الانقسام المستمر ويوجد في أجزاء النبات التي تظهر نشاط انقسامي.</div>
+            </div>
+            
+            <div class="card card-def">
+                <span class="term">النسيج الأساس</span>
+                <div class="desc">هو النسيج الذي تتمايز خلاياه لتكوين أنسجة دائمية في جسم النبات وهو يشكل كتلة نسيجية داخلية في الجذور والسيقان والأوراق.</div>
+            </div>
+
+            <div class="card card-def">
+                <span class="term">الخلايا الكلورونكيمية</span>
+                <div class="desc">خلايا برنكيمية حاوية على بلاستيدات خضراء تقوم بوظيفة البناء الضوئي والتهوية وخزن الغذاء.</div>
+            </div>
+
+            <div class="card card-def">
+                <span class="term">نسيج البشرة</span>
+                <div class="desc">نسيج يغطي النبات، يتكون من صف واحد من الخلايا المتثخنة، نسيج دائمي منشؤه البشرة الأولية.</div>
+            </div>
+
+            <div class="card card-def">
+                <span class="term">النسيج الوعائي</span>
+                <div class="desc">نسيج معقد ومتخصص بنقل الماء والأملاح (الخشب) ونقل الغذاء المذاب (اللحاء) إضافة للإسناد والدعم.</div>
+            </div>
+
+            <div class="card card-def">
+                <span class="term">النسيج الظهاري</span>
+                <div class="desc">يتكون من صفائح مستمرة من الخلايا، يغطي سطح الجسم ويبطن التجاويف، لا يحتوي على مادة بين خلوية.</div>
+            </div>
+
+            <div class="card card-def">
+                <span class="term">النسيج الضام</span>
+                <div class="desc">أنسجة ساندة تقوم بربط أجزاء الجسم المختلفة وإسنادها (مثل العظم والغضروف).</div>
+            </div>
+            
+            <div class="card card-def">
+                <span class="term">النسيج العضلي</span>
+                <div class="desc">خلايا تحتوي على خيوط الأكتين والمايوسين المهمة للحركة وتوليد الحرارة.</div>
+            </div>
+
+            <div class="card card-def">
+                <span class="term">النسيج العصبي</span>
+                <div class="desc">وحدته الخلية العصبية، وظيفته نقل السيالات العصبية لمسافات طويلة.</div>
+            </div>
+        </div>
+
+        <!-- ==========================
+             2. التعاليل
+             ========================== -->
+        <div class="section-wrapper section-reason">
+            <h2 class="section-title">التعاليل والأسباب</h2>
+
+            <div class="card card-reason">
+                <div class="q">س: غالبا ما تكون خلايا النسيج البرنكيمي كروية أو مضلعة؟</div>
+                <div class="a">ج: نتيجة الضغط الواقع عليها من الخلايا المتجاورة.</div>
+            </div>
+
+            <div class="card card-reason">
+                <div class="q">س: تدعى الخلايا البرنكيمية بالكلورونكيمية أحياناً؟</div>
+                <div class="a">ج: لاحتوائها على بلاستيدات خضراء (كلوروفيل) مما يكسبها اللون الأخضر.</div>
+            </div>
+
+            <div class="card card-reason">
+                <div class="q">س: للنسيج الكولنكيمي وظيفة الدعم؟</div>
+                <div class="a">ج: بسبب تغلظ جدران خلاياه وتوزيع التثخنات غير المنتظم.</div>
+            </div>
+
+            <div class="card card-reason">
+                <div class="q">س: تموت خلايا النسيج السكلرنكيمي عند النضج؟</div>
+                <div class="a">ج: لان جدرانها تتغلظ بمادة الخشبين (اللكنين) التي تمنع نفاذ الماء والغازات.</div>
+            </div>
+
+            <div class="card card-reason">
+                <div class="q">س: خلايا البشرة مسطحة ومتراصة؟</div>
+                <div class="a">ج: لانعدام المسافات البينية بين خلاياها.</div>
+            </div>
+
+            <div class="card card-reason">
+                <div class="q">س: كيف تتم السيطرة على تبادل الغازات؟</div>
+                <div class="a">ج: من خلال الثغور التي تكونها الخلايا الحارسة.</div>
+            </div>
+
+            <div class="card card-reason">
+                <div class="q">س: يسمى النسيج الظهاري العمودي المطبق الكاذب بهذا الاسم؟</div>
+                <div class="a">ج: لأن أنويته تقع في مستويات مختلفة مما يعطي إيحاء بتعدد الطبقات.</div>
+            </div>
+
+            <div class="card card-reason">
+                <div class="q">س: النسيج الظهاري المتحول؟</div>
+                <div class="a">ج: لأن خلاياه تغير شكلها لتناسب الأعضاء القابلة للتمدد (مثل المثانة).</div>
+            </div>
+
+            <div class="card card-reason">
+                <div class="q">س: العظم أكثر صلابة من الغضروف؟</div>
+                <div class="a">ج: لاحتواء مادته البينية على فوسفات الكالسيوم وأملاح العضوية.</div>
+            </div>
+
+            <div class="card card-reason">
+                <div class="q">س: كريات الدم البيض أكثر في الأطفال؟</div>
+                <div class="a">ج: لعدم اكتمال الجهاز المناعي لديهم.</div>
+            </div>
+
+            <div class="card card-reason">
+                <div class="q">س: خلايا الدم الحمر حمراء اللون؟</div>
+                <div class="a">ج: لاحتوائها على هيموكلوبين الذي يتحد مع الأكسجين.</div>
+            </div>
+            
+            <div class="card card-reason">
+                <div class="q">س: تسمى العضلات الإرادية بهذا الاسم؟</div>
+                <div class="a">ج: لأنها تخضع لسيطرة إرادة الإنسان.</div>
+            </div>
+
+            <div class="card card-reason">
+                <div class="q">س: العضلات المخططة؟</div>
+                <div class="a">ج: لأن أليافها تمتاز بتخطيط عرضي (مناطق فاتحة وغامقة).</div>
+            </div>
+        </div>
+
+        <!-- ==========================
+             3. المقارنات
+             ========================== -->
+        <div class="section-wrapper section-comp">
+            <h2 class="section-title">المقارنات</h2>
+
+            <div class="card card-comp">
+                <div class="comp-header">الخشب vs اللحاء</div>
+                <table class="comp-table">
+                    <tr><th>الوجه</th><th>نسيج الخشب</th><th>نسيج اللحاء</th></tr>
+                    <tr><td>الوظيفة</td><td>نقل الماء والأملاح</td><td>نقل الغذاء الذائب</td></tr>
+                    <tr><td>المكونات</td><td>أوعية، قصيبات، ألياف</td><td>أنابيب منخلية، مرافقة</td></tr>
+                </table>
+            </div>
+
+            <div class="card card-comp">
+                <div class="comp-header">العظم المصمت vs الإسفنجي</div>
+                <table class="comp-table">
+                    <tr><th>الوجه</th><th>المصمت</th><th>الإسفنجي</th></tr>
+                    <tr><td>التركيب</td><td>يحتوي على قنوات هافرس</td><td>لا يحتوي هافرس، خراج</td></tr>
+                    <tr><td>الموقع</td><td>السيقان</td><td>أطراف العظام</td></tr>
+                </table>
+            </div>
+
+            <div class="card card-comp">
+                <div class="comp-header">الضام الأبيض الكثيف vs الأصفر الكثيف</div>
+                <table class="comp-table">
+                    <tr><th>الوجه</th><th>أبيض (مغراوي)</th><th>أصفر (مرن)</th></tr>
+                    <tr><td>الألياف</td><td>ألياف بيضاء (كولاجين)</td><td>ألياف صفراء (مرنة)</td></tr>
+                    <tr><td>الخاصية</td><td>لا يتمدد (قوة شد)</td><td>قابل للتمدد (مرونة)</td></tr>
+                </table>
+            </div>
+
+            <div class="card card-comp">
+                <div class="comp-header">كريات الدم الحمر vs البيض</div>
+                <table class="comp-table">
+                    <tr><th>الوجه</th><th>الحمر</th><th>البيض</th></tr>
+                    <tr><td>النواة</td><td>لا توجد</td><td>توجد</td></tr>
+                    <tr><td>العدد</td><td>ملايين</td><td>آلاف</td></tr>
+                    <tr><td>الوظيفة</td><td>نقل غازات</td><td>مناعة</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==========================
+             4. الأسئلة والأجوبة
+             ========================== -->
+        <div class="section-wrapper section-qa">
+            <h2 class="section-title">أسئلة وأجوبة</h2>
+
+            <div class="card card-qa">
+                <div class="q">س: ما منشأ الأنسجة النباتية الدائمية؟</div>
+                <div class="a">ج: تنشأ من خلايا أو أنسجة مرستيمية (مولدة).</div>
+            </div>
+
+            <div class="card card-qa">
+                <div class="q">س: أنواع النسيج المرستيمي حسب الموقع؟</div>
+                <div class="a">
+                    1. القمي: قمم الجذور والسيقان.<br>
+                    2. الجانبي: الكمبيوم (للسمك).<br>
+                    3. البيني: قواعد الأوراق.
+                </div>
+            </div>
+
+            <div class="card card-qa">
+                <div class="q">س: لماذا لا يتحول المرستيمي بالكامل؟</div>
+                <div class="a">ج: ليبقى جزء منه دائم التجدد لتكوين خلايا جديدة.</div>
+            </div>
+
+            <div class="card card-qa">
+                <div class="q">س: وظائف النسيج المرستيمي؟</div>
+                <div class="a">ج: استطالة النمو، نمو البراعم، تثخن الجذور والسيقان.</div>
+            </div>
+
+            <div class="card card-qa">
+                <div class="q">س: أنواع خلايا الدم البيض؟</div>
+                <div class="a">ج: حبيبية (عدلة، حمضة، قعدة) ولاحبيبية (لمفية، وحيدة).</div>
+            </div>
+        </div>
+
+        <!-- ==========================
+             5. الفراغات
+             ========================== -->
+        <div class="section-wrapper section-blank">
+            <h2 class="section-title">أكمل العبارات</h2>
+
+            <div class="card card-blank">
+                <span class="blank-text">1. النسيج الظهاري البسيط يتكون من صف</span>
+                <span class="blank-input">واحد</span>
+                <span class="blank-solution">من الخلايا</span>
+            </div>
+
+            <div class="card card-blank">
+                <span class="blank-text">2. النسيج الظهاري المطبق الحرشفي يوجد في</span>
+                <span class="blank-input">بشرة الجلد</span>
+                <span class="blank-solution">والمريء</span>
+            </div>
+
+            <div class="card card-blank">
+                <span class="blank-text">3. يتكون الدم من خلايا و</span>
+                <span class="blank-input">بلازما</span>
+            </div>
+
+            <div class="card card-blank">
+                <span class="blank-text">4. المادة بينية للغضروف تسمى</span>
+                <span class="blank-input">المخاطين</span>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>تم التصميم والتطوير بحب للعلم ©</p>
+    </footer>
+
+    <script>
+        // دالة تغيير الثيم (فاتح/مظلم/ليلي)
+        function setTheme(themeName) {
+            document.body.setAttribute('data-theme', themeName);
+            
+            // تحديث حالة الأزرار النشطة
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.getAttribute('onclick').includes(themeName)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // حفظ التفضيل (اختياري)
+            localStorage.setItem('preferred-theme', themeName);
+        }
+
+        // دالة تغيير لون الهيدر (العلامة التجارية)
+        function setBrand(color) {
+            const root = document.documentElement;
+            if(color === 'blue') {
+                root.style.setProperty('--header-gradient', 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
+            } else {
+                // يمكن إضافة ألوان أخرى هنا مستقبلاً
+            }
+        }
+
+        // استعادة الثيم عند تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('preferred-theme');
+            if(savedTheme) {
+                setTheme(savedTheme);
+            }
+        });
+    </script>
+</body>
+</html>
